@@ -20,10 +20,10 @@ public:
         const audio_engine::sample_block& in_block,
         audio_engine::sample_block& out_block,
         int block_count
-    ) override;
+    ) noexcept override;
 
     void init(std::vector<audio_engine::audio_ring_buffer>& buffers) override;
-    void cleanup() override;
+    void cleanup() noexcept override;
 };
 
 

@@ -64,12 +64,12 @@ namespace audio_engine {
 			const sample_block& in_block, 
 			sample_block& out_block,
 			int block_count
-		) = 0;
+		) noexcept = 0;
 
 
 		virtual void init(std::vector<audio_ring_buffer>& buffers) = 0;
 
-		virtual void cleanup() = 0;
+		virtual void cleanup() noexcept = 0;
 	};
 
 
