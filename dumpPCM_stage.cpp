@@ -6,7 +6,7 @@ char* dumpPCM_stage::get_out_buffer()
 	return buf;
 }
 
-audio_engine::sample_state dumpPCM_stage::process_block(const audio_engine::pipeline_state& state, const audio_engine::sample_block& in_block, audio_engine::sample_block& out_block, int block_count)
+audio_engine::sample_state dumpPCM_stage::process_block(const audio_engine::pipeline_state& state, const audio_engine::sample_block& in_block, audio_engine::sample_block& out_block, int block_count) noexcept
 {
 	for (uint64_t i = 0; i < audio_engine::sample_block_size; i++) {
 		if (!std::isnan(in_block[i]))
@@ -22,7 +22,7 @@ void dumpPCM_stage::init(std::vector<audio_engine::audio_ring_buffer>& buffers)
 	m_file.rdbuf()->pubsetbuf(get_out_buffer(), s_out_buf_size);
 }
 
-void dumpPCM_stage::cleanup()
+void dumpPCM_stage::cleanup() noexcept
 {
 	m_file.flush();
 	m_file.close();

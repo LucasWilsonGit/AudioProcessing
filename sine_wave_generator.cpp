@@ -6,7 +6,7 @@ constexpr int cexpr_ceil(float in) {
     return (in - truncated >= 0.5) ? truncated + 1 : truncated;
 }
 
-audio_engine::sample_state sine_wave_generator::process_block(const audio_engine::pipeline_state& state, const audio_engine::sample_block& in_block, audio_engine::sample_block& out_block, int block_count)
+audio_engine::sample_state sine_wave_generator::process_block(const audio_engine::pipeline_state& state, const audio_engine::sample_block& in_block, audio_engine::sample_block& out_block, int block_count) noexcept
 {
 
     for (uint64_t i = 0; i < audio_engine::sample_block_size; i++)
@@ -26,4 +26,4 @@ audio_engine::sample_state sine_wave_generator::process_block(const audio_engine
 
 void sine_wave_generator::init(std::vector<audio_engine::audio_ring_buffer>& buffers) {};
 
-void sine_wave_generator::cleanup() {};
+void sine_wave_generator::cleanup() noexcept {};

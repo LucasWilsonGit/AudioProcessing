@@ -11,7 +11,13 @@ delay_stage::delay_stage(std::chrono::milliseconds delay_ms)
 
 }
 
-audio_engine::sample_state delay_stage::process_block(const audio_engine::pipeline_state& state, const audio_engine::sample_block& in_block, audio_engine::sample_block& out_block, int block_count)
+audio_engine::sample_state delay_stage::process_block(
+    const audio_engine::pipeline_state& state, 
+    const audio_engine::sample_block& in_block, 
+    audio_engine::sample_block& out_block, 
+    int block_count
+)
+noexcept
 {
     memcpy(out_block, in_block, sizeof(audio_engine::sample_block));
     return audio_engine::sample_block_state_processed;
@@ -33,7 +39,7 @@ void delay_stage::init(std::vector<audio_engine::audio_ring_buffer>& buffers)
     memset(buffers.front().get_block_states(), 2, buffers.front().m_block_count);
 }
 
-void delay_stage::cleanup()
+void delay_stage::cleanup() noexcept
 {
 }
 

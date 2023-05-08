@@ -76,7 +76,7 @@ namespace audio_engine {
 			return *this;
 		}
 
-		size_t size() {
+		size_t size() const {
 			return m_block_count * (1 + sizeof(sample_block));
 		}
 	};
@@ -203,13 +203,15 @@ namespace audio_engine {
 			memset(m_storage.m_memory, 0, m_storage.size());
 		};
 
-		audio_ring_buffer copy() const {
-			auto temporary = audio_ring_buffer(m_block_count);
-			copy_to(temporary, 0);
-		};
+		
 		
 		void copy_to(audio_ring_buffer& dest, uint32_t samples_offset = 0) const {
 			copy_slice_to(dest, 0, samples_offset, m_block_count * sample_block_size);
+		};
+
+		audio_ring_buffer copy() const {
+			auto temporary = audio_ring_buffer(m_block_count);
+			copy_to(temporary, 0);
 		};
 
 
@@ -231,6 +233,8 @@ namespace audio_engine {
 		/// <param name="sample_idx_to:		">the sample index to copy to</param>
 		/// <param name="samples_range:		">the range of samples to copy</param>
 		void copy_slice_to(audio_ring_buffer& dest, uint32_t sample_idx_from, uint32_t sample_idx_to, uint32_t samples_range) const {
+			std::atomic_thread_fence(std::memory_order_acquire);
+
 			auto block_count = m_block_count;
 			auto dest_block_count = dest.m_block_count;
 			auto from_buffer_size = block_count * sample_block_size; 
@@ -331,6 +335,8 @@ namespace audio_engine {
 				reinterpret_cast<void*>(tmp_state + to_unwrap_size_state),
 				static_cast<size_t>(to_wrap_size_state)
 			);
+
+			std::atomic_thread_fence(std::memory_order_release);
 		};
 
 
