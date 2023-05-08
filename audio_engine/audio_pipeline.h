@@ -87,7 +87,15 @@ namespace audio_engine {
 
 	public:
 		//accept implicits e.g. initializer_list of unique_ptr<pipeline_stage>
-		
+		~audio_pipeline() {
+			for (auto& stage : m_generator_stages)
+				stage->cleanup();
+			for (auto& stage : m_processing_stages)
+				stage->cleanup();
+			for (auto& stage : m_output_stages)
+				stage->cleanup();
+		}
+
 		audio_pipeline(
 			std::vector<std::unique_ptr<pipeline_stage>> generator_stages,
 			std::vector<std::unique_ptr<pipeline_stage>> processing_stages,
@@ -138,6 +146,8 @@ namespace audio_engine {
 
 		void stop() {
 			m_state.execution_state.store(pipeline_execution_state::STOPPED);
+
+
 		};
 		void pause() {
 			m_state.execution_state.store(pipeline_execution_state::PAUSED);
@@ -312,8 +322,18 @@ namespace audio_engine {
 						stage->m_flushing.store(false);
 				}
 
-				//I don't need to flush output buffers, the output sub-FSM should be self-enclosed back to the default state
-			}
+				
+			}//end while-executing loop
+
+			m_threads.clear(); //will invoke the destructor of all of the threads for the stages, they are std::jthread so this will block until they rejoin
+			
+			//TODO: make some span/reference only collection that tracks all of the stages
+			for (auto& stage : m_generator_stages)
+				stage->cleanup();
+			for (auto& stage : m_processing_stages)
+				stage->cleanup();
+			for (auto& stage : m_output_stages)
+				stage->cleanup();
 		};
 
 		void run_async()
